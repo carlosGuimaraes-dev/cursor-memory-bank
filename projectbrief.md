@@ -14,6 +14,7 @@ To develop a sophisticated trading system for the Micro Nasdaq futures market ut
 
 - **Data Handling:** Efficiently download, process, and manage historical and real-time Micro Nasdaq data across multiple timeframes.
 - **Model Development:** Implement and train deep learning models (TimesNet for feature extraction, PPO for trading decisions).
+  - The core `TimesNetExtractor` for feature extraction from time series data has been implemented, supporting multi-timeframe analysis. Key components include `src/models/timesnet_extractor.py` and the wrapper `src/trading/feature_extractor.py`.
 - **Trading Strategy:** Develop a modular trading strategy that integrates model signals with position management and risk control.
 - **Backtesting & Evaluation:** Implement robust backtesting and evaluation frameworks to assess model and strategy performance.
 - **Monitoring:** Develop a monitoring system for live trading performance and system health.

@@ -1,33 +1,68 @@
-# System Patterns
+# System Patterns for TimesTrader
 
-This document outlines the system architecture, key technical decisions, design patterns, and component relationships within the Deep Learning Micro Nasdaq TimesTrader project.
+## General Trading Loop Overview
 
-## Architecture Overview
+The following outlines the general execution loop of the TimesTrader system:
 
-The system follows a modular architecture, with distinct components for data handling, model development, trading execution, and monitoring. This allows for flexibility and independent development/testing of each part.
+```
+while True:
+    # 1. Wait for a new 5-minute candle
+    #    - Data is sourced from a data API (e.g., Polygon, TwelveData, NinjaTrader).
+    candle = get_new_candle()
 
-## Key Technical Decisions
+    # 2. Update the time series
+    #    - The new candle is appended to the historical series.
+    series.append(candle)
 
-- **Deep Learning Models:** Utilizing TimesNet for feature extraction from time series data and PPO (Proximal Policy Optimization) for reinforcement learning-based trading decisions.
-- **Data Pipelines:** Implementing separate pipelines for historical and real-time data to ensure efficient processing and timely signal generation.
-- **Position Management:** Employing a dedicated position manager to handle trade execution, risk control, and portfolio management.
-- **Modularity:** Designing components to be interchangeable and independently testable.
+    # 3. Extract features using TimesNet (inference only)
+    #    - The TimesNet model processes the last N candles to generate the current state.
+    state_t = timesnet_model.infer(series[-N:])
 
-## Design Patterns
+    # 4. Each PPO agent makes a decision based on the current features
+    #    - Agents for Buy, Sell, Stop Loss (SL), Trailing Stop (TS), Break Even (BE) decide their actions.
+    actions = {}
+    for agent_name, agent in agents.items():
+        actions[agent_name] = agent.decide(state_t)
 
-- **Observer Pattern:** Potentially used for real-time data updates and alerting in the monitoring system.
-- **Factory Pattern:** Could be used for creating different types of trading agents or model configurations.
-- **Dependency Injection:** To manage dependencies between different modules and facilitate testing.
+    # 5. XGBoost Validator receives context and PPO agent actions for validation
+    #    - It assembles an input from the current state and PPO actions.
+    #    - Predicts the probability of success for the combined proposed action.
+    xgb_input = assemble_input_for_xgboost(state_t, actions)
+    success_prob = xgboost_model.predict_proba(xgb_input)
 
-## Component Relationships
+    # 6. If the success probability is high, send the order to the broker
+    #    - A predefined threshold (e.g., 0.8) is used to gate execution.
+    #    - If approved, the order is sent to NinjaTrader 8 (or other configured broker).
+    if success_prob >= threshold:
+        order_info = execute_order(actions, broker="NinjaTrader8")
+        log_trade(order_info)
+        trade_executed = True
+    else:
+        log_rejected_decision(state_t, actions, success_prob)
+        trade_executed = False
 
-- **Data Manager:** Provides processed data to the TimesNet Extractor and Trading Environment.
-- **TimesNet Extractor:** Outputs features used by the PPO Agent.
-- **PPO Agent:** Receives features and the trading environment state to make trading decisions.
-- **Position Manager:** Executes trades based on signals from the PPO Agent and enforces risk rules.
-- **Monitoring System:** Receives data from the Trading Environment and Position Manager to track performance and system health.
+    # 7. If a trade was executed, wait for its closure and compute the reward
+    #    - The system monitors the executed trade until it closes (e.g., hits SL, TP, or is manually closed).
+    #    - The result (profit/loss) is used to compute a reward signal.
+    if trade_executed:
+        trade_result = wait_for_trade_close(order_info)
+        reward = compute_reward(trade_result)
 
-## Critical Implementation Paths
+        # 8. Collect the new state (state_t+1) after the trade closes
+        #    - A new candle is fetched and appended to the series.
+        #    - TimesNet infers the next state.
+        next_candle = get_new_candle()
+        series.append(next_candle)
+        state_t1 = timesnet_model.infer(series[-N:])
 
-- The data flow from raw data to trade execution is a critical path that requires low latency and high reliability.
-- The interaction between the PPO Agent and the Trading Environment during training and execution is crucial for effective learning and performance.
+        # 9. Store the experience in the Replay Buffer for future learning
+        #    - The transition (state, action, reward, next_state, done) is stored.
+        buffer.add((state_t, actions, reward, state_t1, True))  # done = True indicates the end of an episode/trade
+
+    # 10. Periodically, retrain PPO agents using experiences from the buffer
+    #     - If the buffer has enough samples and it's time to retrain (e.g., based on a schedule or buffer size).
+    #     - Each agent is trained on a batch of relevant experiences.
+    if buffer.ready() and time_to_retrain():
+        for agent_name, agent in agents.items():
+            agent.train(buffer.sample_batch(agent_name))
+```
