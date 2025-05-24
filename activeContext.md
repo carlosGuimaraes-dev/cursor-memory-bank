@@ -1,42 +1,49 @@
-# Active Context
+## Validator Dashboard Enhancements - Session Summary (2025-05-22)
 
-This document tracks the current focus of work, recent changes, next steps, and active considerations for the Deep Learning Micro Nasdaq TimesTrader project.
+**Objective:** Complete and refine the XGBoost Validator Metrics Dashboard.
 
-## Current Focus
+**Key Activities & Outcomes:**
 
-Resolving existing unit test issues, particularly for the PPO trading agent, to ensure the stability of individual components before proceeding with integration testing.
+1.  **Timeseries Chart Major Rework:**
 
-## Recent Changes
+    - Changed from faceted columns to a single chart area with categories grouped side-by-side.
+    - Implemented stacking for `PPO` vs. `Validated` signal sources within each category bar.
+    - Updated color scheme as per user request:
+      - Categories: Buy (green), Sell (red), Do Nothing (gray).
+      - Sources: PPO (yellow), Validated (blue).
+    - Corrected issues with bar widths, spacing, and hovertext to accurately reflect the new structure.
 
-- Initialized the memory bank documentation.
-- Organized the TimesTrader folder by deleting unused files.
-- Attempted to implement Gemini caching (but encountered issues with the google-generativeai library and API key setup).
-- Attempted to fix PPO agent unit tests (but encountered persistent issues with test setup and file modification).
-- Re-evaluated project plan based on VPM deployment target.
-- Decided to prioritize resolving existing unit test failures/issues before focusing on integration or infrastructure tasks.
+2.  **Port Conflict Resolution:**
 
-## Next Steps
+    - Changed the dashboard's default port to `8061` to avoid conflicts with other services.
 
-- Investigate and fix the persistent issues with PPO agent unit tests.
-- Verify that unit tests for other key components (TimesNetExtractor, XGBoost Validator, etc.) are passing.
-- Update relevant tasks in `tasks.json` or `progress.md` as issues are resolved.
-- Transition to a phase focused on integration testing once unit tests are stable.
+3.  **Internationalization:**
 
-## Active Decisions and Considerations
+    - Completed the translation of all remaining UI elements from Portuguese to English.
 
-- The target deployment environment is a Virtual Private Machine (VPM), not a distributed or cloud-based system requiring complex orchestration (like Kubernetes).
-- This significantly impacts the scope and complexity needed for tasks like CI/CD (Task 12), which should be re-scoped to focus on automated testing, simplified artifact building, and VPM-compatible deployment.
-- The Monitoring (Task 10) and Containerization (Task 11) tasks may also need adjustments to align with a VPM environment.
-- How to resolve the issues preventing the PPO agent tests from passing is the immediate priority.
-- Ensuring all core components have stable and passing unit tests is a prerequisite for effective integration testing.
+4.  **Data Handling & Mock Data:**
 
-## Important Patterns and Preferences
+    - Increased the mock data generation from 150 to 500 events to provide a richer dataset for visualization.
+    - Improved the distribution of confidence values in mock data for more realistic testing of the confidence histogram.
+    - Implemented more robust handling for empty or incomplete data scenarios to prevent chart rendering errors.
+    - Resolved various `TypeError` and variable declaration issues in the data processing and callback logic.
 
-- Adhering to the defined memory bank structure.
-- Prioritizing clear and concise documentation.
+5.  **Visualization Enhancements (Beyond Timeseries):**
 
-## Learnings and Project Insights
+    - **Status Counts:** Confirmed horizontal bar chart implementation with percentage labels for clarity.
+    - **Confidence Distribution:** Ensured histogram correctly displays low/medium/high confidence bands and uses a vertical orientation for the distribution with a horizontal bar representation.
+    - **Donut Charts:** Verified the implementation of donut charts for key metrics: Acceptance Rate, Average Confidence, and PPO-XGBoost Agreement, all with percentage indicators.
+    - **Time Interval:** Confirmed 5-minute groupings for the time series chart.
 
-- The project has an existing codebase with various components for data handling, modeling, trading, and testing.
-- There are existing documentation files in the `docs` directory that should be reviewed and potentially integrated or referenced in the memory bank.
-- There are challenges in setting up the testing environment and ensuring compatibility between different components, especially when dealing with external libraries and APIs.
+6.  **UI/UX Refinements:**
+
+    - Ensured percentage indicators are present across all relevant visualizations.
+    - Improved tooltips to consistently show counts and percentages on hover.
+    - Increased the default page size for the recent events table from 10 to 20 rows.
+    - Maintained consistent color-coding for confidence levels (red/orange/green) in the confidence distribution chart.
+
+7.  **Task Management:**
+    - Updated Taskmaster task 8 ("Develop XGBoost Validator") to reflect the completion of the dashboard enhancements.
+    - Successfully (after some troubleshooting with subtask IDs) marked the relevant subtasks (8.5 and a new summary subtask 9.9) as "done".
+
+**Final Status:** The validator dashboard is now functionally complete, with all requested features and enhancements implemented. The application runs correctly on port 8061, displays data as intended, and provides a comprehensive overview of validator performance.

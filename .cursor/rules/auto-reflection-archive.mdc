@@ -1,0 +1,53 @@
+---
+description: Automação do processo de reflexão e arquivamento ao final de cada tarefa concluída
+globs: **/*
+alwaysApply: true
+---
+# Regra de Reflexão e Arquivamento Automático
+
+## **Trigger de Ativação**
+- **Quando:** Uma tarefa é marcada como "done" no TaskMaster
+- **Quando:** O usuário menciona que uma tarefa foi finalizada
+- **Quando:** Um marco significativo do projeto é atingido
+
+## **Processo Automático**
+
+### **1. Detecção de Conclusão**
+- Monitorar status "done" no TaskMaster
+- Detectar frases: "tarefa concluída", "finalizada", "implementação completa"
+
+### **2. Aplicação das Diretrizes do Memory Bank**
+- Seguir estrutura definida em `cursor-memory-bank/memory_bank_upgrade_guide.md`
+- Usar templates de reflexão baseados nas diretrizes do cursor memory bank
+- Aplicar padrões de documentação estabelecidos
+- Integrar com fluxo de custom modes quando aplicável
+
+### **3. Criação Automática de Documentos**
+- **Reflexão**: `cursor-memory-bank/reflection/reflection-[task-id]-[description].md`
+- **Arquivo**: `cursor-memory-bank/archive/archive-[task-id]-[description].md`
+- **Atualização**: Registrar no TaskMaster com detalhes de conclusão
+
+### **4. Integração com Custom Modes**
+- **Automático**: Para conclusões simples de subtasks
+- **Manual REFLECT Mode**: Para tarefas complexas que requerem análise profunda
+- **Override**: Usuário pode forçar modo manual com "MANUAL REFLECTION MODE"
+
+### **5. Estrutura dos Documentos**
+- Seguir padrões do Memory Bank para consistência
+- Incluir métricas de qualidade e impacto
+- Documentar lições aprendidas e próximos passos
+- Referenciar dependências e integrações
+
+## **Notificação**
+🔄 REFLEXÃO AUTOMÁTICA INICIADA
+
+## **Override Manual**
+Para desativar: "MANUAL REFLECTION MODE"
+
+## **Caminhos Corretos**
+- **Reflexão**: `cursor-memory-bank/reflection/`
+- **Arquivo**: `cursor-memory-bank/archive/`
+- **Diretrizes**: `cursor-memory-bank/memory_bank_upgrade_guide.md`
+
+---
+**Nota:** Esta regra automatiza o processo de reflexão e arquivamento seguindo as diretrizes do Memory Bank.
