@@ -3,51 +3,78 @@ description: Automação do processo de reflexão e arquivamento ao final de cad
 globs: **/*
 alwaysApply: true
 ---
-# Regra de Reflexão e Arquivamento Automático
+# Automatic Reflection and Archive Rule
 
-## **Trigger de Ativação**
-- **Quando:** Uma tarefa é marcada como "done" no TaskMaster
-- **Quando:** O usuário menciona que uma tarefa foi finalizada
-- **Quando:** Um marco significativo do projeto é atingido
+## **Activation Triggers**
+- **When:** A task is marked as "done" in TaskMaster
+- **When:** User mentions that a task has been completed
+- **When:** A significant project milestone is reached
 
-## **Processo Automático**
+## **Automatic Process**
 
-### **1. Detecção de Conclusão**
-- Monitorar status "done" no TaskMaster
-- Detectar frases: "tarefa concluída", "finalizada", "implementação completa"
+### **1. Completion Detection**
+- Monitor "done" status in TaskMaster
+- Detect phrases: "task completed", "finished", "implementation complete"
 
-### **2. Aplicação das Diretrizes do Memory Bank**
-- Seguir estrutura definida em `cursor-memory-bank/memory_bank_upgrade_guide.md`
-- Usar templates de reflexão baseados nas diretrizes do cursor memory bank
-- Aplicar padrões de documentação estabelecidos
-- Integrar com fluxo de custom modes quando aplicável
+### **2. Memory Bank Guidelines Application**
+- Follow structure defined in `cursor-memory-bank/memory_bank_upgrade_guide.md`
+- Use reflection templates based on cursor memory bank guidelines
+- Apply established documentation patterns
+- Integrate with custom modes flow when applicable
 
-### **3. Criação Automática de Documentos**
-- **Reflexão**: `cursor-memory-bank/reflection/reflection-[task-id]-[description].md`
-- **Arquivo**: `cursor-memory-bank/archive/archive-[task-id]-[description].md`
-- **Atualização**: Registrar no TaskMaster com detalhes de conclusão
+### **3. Automatic Document Creation**
+- **Reflection**: `cursor-memory-bank/reflection/reflection-[task-id]-[description].md`
+- **Archive**: `cursor-memory-bank/archive/archive-[task-id]-[description].md`
+- **Integration Test**: `tests/integration/test_task_[task-id]_integration.py` (for main tasks)
+- **Update**: Register in TaskMaster with completion details
 
-### **4. Integração com Custom Modes**
-- **Automático**: Para conclusões simples de subtasks
-- **Manual REFLECT Mode**: Para tarefas complexas que requerem análise profunda
-- **Override**: Usuário pode forçar modo manual com "MANUAL REFLECTION MODE"
+### **4. Integration with Custom Modes and Tests**
+- **Automatic**: For simple subtask completions
+- **Manual REFLECT Mode**: For complex tasks requiring deep analysis
+- **Automatic Integration Test**: For main tasks with multiple subtasks (complexity >= 5)
+- **Override**: User can force manual mode with "MANUAL REFLECTION MODE"
+- **Skip Integration**: User can skip test with "SKIP INTEGRATION TEST"
 
-### **5. Estrutura dos Documentos**
-- Seguir padrões do Memory Bank para consistência
-- Incluir métricas de qualidade e impacto
-- Documentar lições aprendidas e próximos passos
-- Referenciar dependências e integrações
+### **5. Document Structure**
+- Follow Memory Bank patterns for consistency
+- Include quality and impact metrics
+- Document lessons learned and next steps
+- Reference dependencies and integrations
 
-## **Notificação**
-🔄 REFLEXÃO AUTOMÁTICA INICIADA
+## **Automatic Integration Process (Main Tasks)**
 
-## **Override Manual**
-Para desativar: "MANUAL REFLECTION MODE"
+### **Integration Trigger:**
+- Main task marked as "done" 
+- All subtasks with "done" status
+- Complexity score >= 5
+- Multiple components implemented
 
-## **Caminhos Corretos**
-- **Reflexão**: `cursor-memory-bank/reflection/`
-- **Arquivo**: `cursor-memory-bank/archive/`
-- **Diretrizes**: `cursor-memory-bank/memory_bank_upgrade_guide.md`
+### **Automatic Actions:**
+1. **Component Analysis**: Identify systems implemented in subtasks
+2. **Test Generation**: Create `tests/integration/test_task_{id}_integration.py`
+3. **Automatic Execution**: Run end-to-end integration test
+4. **Report**: Generate report in `test_reports/integration/`
+5. **Documentation**: Register results in reflection
+
+### **Success Criteria:**
+- ✅ Initialization of all components
+- ✅ Interface compatibility
+- ✅ Data flow integrity
+- ✅ Integrated error handling
+- ✅ Acceptable performance
+
+## **Notification**
+🔄 AUTOMATIC REFLECTION STARTED
+🔗 AUTOMATIC INTEGRATION TEST STARTED (if applicable)
+
+## **Manual Override**
+To disable reflection: "MANUAL REFLECTION MODE"
+To skip integration: "SKIP INTEGRATION TEST"
+
+## **Correct Paths**
+- **Reflection**: `cursor-memory-bank/reflection/`
+- **Archive**: `cursor-memory-bank/archive/`
+- **Guidelines**: `cursor-memory-bank/memory_bank_upgrade_guide.md`
 
 ---
-**Nota:** Esta regra automatiza o processo de reflexão e arquivamento seguindo as diretrizes do Memory Bank.
+**Note:** This rule automates the reflection and archiving process following Memory Bank guidelines.
